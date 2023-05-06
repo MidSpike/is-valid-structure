@@ -2,23 +2,23 @@
 //                   Copyright (c) MidSpike                   //
 //------------------------------------------------------------//
 
-// PAO: Primitive | Primitive Array | Primitive Object Value
+// PAO: Primitive | Primitive Array | Primitive Object
 type PAO<T> = T | PAO<T>[] | { [ k: string ]: PAO<T> };
 
-// SPL: Primitive String | Primitive List String
+// SPL: String Primitive | String List
 type SPL<T extends string> = `${T}` | `${T}[]`;
 
 //------------------------------------------------------------//
 
-type ValidInputPrimitives = string | number | boolean | null;
+type ValidInputPrimitive = string | number | boolean | null;
 
-type ValidInput = PAO<ValidInputPrimitives>;
+type ValidInput = PAO<ValidInputPrimitive>;
 
 //------------------------------------------------------------//
 
-type ValidStructurePrimitives = 'string' | 'number' | 'boolean' | 'null' | 'any';
+type ValidStructurePrimitive = 'string' | 'number' | 'boolean' | 'null' | 'unknown' | 'any';
 
-type ValidStructure = PAO<SPL<ValidStructurePrimitives>>;
+type ValidStructure = PAO<SPL<ValidStructurePrimitive>>;
 
 //------------------------------------------------------------//
 
@@ -58,7 +58,7 @@ export function isValidStructure<
     if (typeof structure === 'string') {
         const [ type, is_array ] = structure.split('[]').map(
             (s) => s?.length > 0 ? s : true
-        ) as [ ValidStructurePrimitives, boolean ];
+        ) as [ ValidStructurePrimitive, boolean ];
 
         if (is_array) {
             if (!Array.isArray(input)) return false;
@@ -67,6 +67,7 @@ export function isValidStructure<
         }
 
         if (type === 'any') return true;
+        if (type === 'unknown') return true;
 
         if (type === 'null') return input === null;
 
@@ -105,6 +106,8 @@ export function isValidStructure<
 
     return false;
 }
+
+//------------------------------------------------------------//
 
 async function main() {
     console.log(
